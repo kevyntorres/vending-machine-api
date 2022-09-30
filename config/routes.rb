@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
-  get 'index/deposit'
-  get 'index/buy'
-  get 'index/reset'
+  get '/deposit' => 'index#deposit'
+  get '/buy' => 'index#buy'
+  get '/reset' => 'index#reset'
   resources :users
   resources :products
 end
