@@ -1,5 +1,8 @@
 class ProductsController < ApplicationController
 
+  skip_before_action :authenticate_request, only: [:index, :show]
+  before_action :validate_seller?, only: [:update, :destroy]
+
   def index
     products = Product.all
     render json: products, status: :ok
@@ -10,7 +13,7 @@ class ProductsController < ApplicationController
   end
 
   def create
-    new_product = Product.create(product)
+    new_product = Product.create(product.merge!('sellerId': current_user.username))
     if new_product.save
       render json: { id: new_product.id }, status: :ok
     else
@@ -39,7 +42,13 @@ class ProductsController < ApplicationController
   end
 
   def product
-    params[:product].to_unsafe_h
+    params.permit(:cost, :amountAvailable, :productName)
+  end
+
+  def validate_seller?
+    unless current_user.username == Product.find(id)&.sellerId
+      render json: { message: 'unauthorized action!'}, status: :unauthorized
+    end
   end
 
 end
