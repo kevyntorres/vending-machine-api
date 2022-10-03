@@ -7,4 +7,6 @@ class User < ApplicationRecord
 
   validates :username, presence: true, uniqueness: true
   validates :role, presence: true, inclusion: { in: ROLES }
+
+  serialize :deposit, Array
 end

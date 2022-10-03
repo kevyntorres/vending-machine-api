@@ -2,6 +2,8 @@ class ProductsController < ApplicationController
 
   skip_before_action :authenticate_request, only: [:index, :show]
   before_action :validate_seller?, only: [:update, :destroy]
+  before_action :buyer_role?, only: [:buy]
+
 
   def index
     products = Product.all
@@ -37,12 +39,35 @@ class ProductsController < ApplicationController
     render json: {}, status: :ok
   end
 
+  def buy
+    product = Product.find(buy_params[:productId])
+    cost = buy_params[:amount] * product[:cost]
+    change = current_user.deposit - cost
+    if product.amountAvailable - buy_params[:amount] < 0
+      render json: { message: 'product amount available is not enough!' }, status: :bad_request
+    elsif change < 0
+      render json: { message: 'you need to deposit more coins!' }, status: :bad_request
+    else
+      current_user.deposit = 0
+      current_user.save!
+      product.amountAvailable =- buy_params[:amount]
+      product.save!
+      render json: { product: product.productName, totalSpent: cost, change: change }, status: :ok
+    end
+  end
+
+  private
+
   def id
     params[:id]
   end
 
   def product
     params.permit(:cost, :amountAvailable, :productName)
+  end
+
+  def buy_params
+    params.permit(:productId, :amount)
   end
 
   def validate_seller?

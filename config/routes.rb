@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
-  get '/deposit' => 'index#deposit'
-  get '/buy' => 'index#buy'
-  get '/reset' => 'index#reset'
+  post '/deposit' => 'users#deposit'
+  post '/buy' => 'products#buy'
+  post '/reset' => 'users#reset_deposit'
   resources :users
   resources :products
 

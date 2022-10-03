@@ -4,7 +4,14 @@ class ApplicationController < ActionController::API
 
   attr_accessor :current_user
 
+  def buyer_role?
+    unless current_user.role == 'buyer'
+      render json: { message: 'you must have buyer role!'}, status: :unauthorized
+    end
+  end
+
   private
+
   def authenticate_request
     header = request.headers['Authorization']
     header = header.split(" ").last if header
