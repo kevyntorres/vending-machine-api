@@ -50,7 +50,7 @@ class ProductsController < ApplicationController
     else
       current_user.deposit = []
       current_user.save!
-      product.amountAvailable =- buy_params[:amount]
+      product.amountAvailable = product.amountAvailable - buy_params[:amount]
       product.save!
       render json: { product: product.productName, totalSpent: cost, change: change_array(change) }, status: :ok
     end
