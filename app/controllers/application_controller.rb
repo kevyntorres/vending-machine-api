@@ -2,6 +2,8 @@ class ApplicationController < ActionController::API
   include JsonWebToken
   before_action :authenticate_request
 
+  ACCEPTED_COINS = [5, 10, 20, 50, 100].freeze
+
   attr_accessor :current_user
 
   def buyer_role?

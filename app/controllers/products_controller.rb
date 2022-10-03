@@ -42,17 +42,17 @@ class ProductsController < ApplicationController
   def buy
     product = Product.find(buy_params[:productId])
     cost = buy_params[:amount] * product[:cost]
-    change = current_user.deposit - cost
+    change = deposit_amount - cost
     if product.amountAvailable - buy_params[:amount] < 0
       render json: { message: 'product amount available is not enough!' }, status: :bad_request
     elsif change < 0
-      render json: { message: 'you need to deposit more coins!' }, status: :bad_request
+      render json: { message: 'you need more coins to buy it!' }, status: :bad_request
     else
-      current_user.deposit = 0
+      current_user.deposit = []
       current_user.save!
       product.amountAvailable =- buy_params[:amount]
       product.save!
-      render json: { product: product.productName, totalSpent: cost, change: change }, status: :ok
+      render json: { product: product.productName, totalSpent: cost, change: change_array(change) }, status: :ok
     end
   end
 
@@ -60,6 +60,30 @@ class ProductsController < ApplicationController
 
   def id
     params[:id]
+  end
+
+  def deposit_amount
+    current_user.deposit.inject(0, :+)
+  end
+
+  def change_array(change)
+    Array.new.tap do |array|
+      ACCEPTED_COINS.reverse.each do |coin|
+        next if change < coin
+
+        change = change_calc(change, coin, array)
+      end
+    end
+  end
+
+  def change_calc(change, coin, arr)
+    rest = change % coin
+    (change / coin).times { arr << coin }
+    if rest >= coin && rest > 0
+      change_calc(rest, coin, arr)
+    else
+      rest
+    end
   end
 
   def product

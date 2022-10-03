@@ -2,8 +2,6 @@ class UsersController < ApplicationController
   skip_before_action :authenticate_request, only: [:create]
   before_action :buyer_role?, only: [:deposit, :reset_deposit]
 
-  ACCEPTED_COINS = [5, 10, 20, 50, 100].freeze
-
   def index
     users = User.all
     render json: users, status: :ok
