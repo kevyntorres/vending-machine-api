@@ -1,5 +1,10 @@
 class ProductsController < ApplicationController
 
+  def index
+    products = Product.all
+    render json: products, status: :ok
+  end
+
   def show
     render json: Product.find(id), status: :ok
   end

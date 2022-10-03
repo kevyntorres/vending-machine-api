@@ -4,4 +4,6 @@ Rails.application.routes.draw do
   get '/reset' => 'index#reset'
   resources :users
   resources :products
+
+  post '/login' => 'authentication#login'
 end
