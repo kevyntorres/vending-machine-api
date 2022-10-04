@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 class UsersController < ApplicationController
   skip_before_action :authenticate_request, only: [:create]
-  before_action :buyer_role?, only: [:deposit, :reset_deposit]
+  before_action :buyer_role?, only: %i[deposit reset_deposit]
 
   def index
     users = User.all
@@ -50,7 +52,7 @@ class UsersController < ApplicationController
   def reset_deposit
     current_user.deposit = []
     current_user.save!
-    render json: { message: 'Deposit has been resetted!', deposit: current_user.deposit }, status: :ok
+    render json: { message: 'Deposit has been restored!', deposit: current_user.deposit }, status: :ok
   end
 
   private

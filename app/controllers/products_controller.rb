@@ -1,9 +1,9 @@
+# frozen_string_literal: true
+
 class ProductsController < ApplicationController
-
-  skip_before_action :authenticate_request, only: [:index, :show]
-  before_action :validate_seller?, only: [:update, :destroy]
+  skip_before_action :authenticate_request, only: %i[index show]
+  before_action :validate_seller?, only: %i[update destroy]
   before_action :buyer_role?, only: [:buy]
-
 
   def index
     products = Product.all
@@ -43,9 +43,9 @@ class ProductsController < ApplicationController
     product = Product.find(buy_params[:productId])
     cost = buy_params[:amount] * product[:cost]
     change = deposit_amount - cost
-    if product.amountAvailable - buy_params[:amount] < 0
+    if (product.amountAvailable - buy_params[:amount]).negative?
       render json: { message: 'product amount available is not enough!' }, status: :bad_request
-    elsif change < 0
+    elsif change.negative?
       render json: { message: 'you need more coins to buy it!' }, status: :bad_request
     else
       current_user.deposit = []
@@ -67,7 +67,7 @@ class ProductsController < ApplicationController
   end
 
   def change_array(change)
-    Array.new.tap do |array|
+    [].tap do |array|
       ACCEPTED_COINS.reverse.each do |coin|
         next if change < coin
 
@@ -79,7 +79,7 @@ class ProductsController < ApplicationController
   def change_calc(change, coin, arr)
     rest = change % coin
     (change / coin).times { arr << coin }
-    if rest >= coin && rest > 0
+    if rest >= coin && rest.positive?
       change_calc(rest, coin, arr)
     else
       rest
@@ -95,9 +95,8 @@ class ProductsController < ApplicationController
   end
 
   def validate_seller?
-    unless current_user.username == Product.find(id)&.sellerId
-      render json: { message: 'unauthorized action!'}, status: :unauthorized
-    end
-  end
+    return if current_user.username == Product.find(id)&.sellerId
 
+    render json: { message: 'unauthorized action!' }, status: :unauthorized
+  end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ApplicationController < ActionController::API
   include JsonWebToken
   before_action :authenticate_request
@@ -7,16 +9,14 @@ class ApplicationController < ActionController::API
   attr_accessor :current_user
 
   def buyer_role?
-    unless current_user.role == 'buyer'
-      render json: { message: 'you must have buyer role!'}, status: :unauthorized
-    end
+    render json: { message: 'you must have buyer role!' }, status: :unauthorized unless current_user.role == 'buyer'
   end
 
   private
 
   def authenticate_request
     header = request.headers['Authorization']
-    header = header.split(" ").last if header
+    header = header.split(' ').last if header
     decoded = jwt_decode(header)
     @current_user = User.find(decoded[:user_id])
   end

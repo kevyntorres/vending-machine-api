@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 class User < ApplicationRecord
   require 'securerandom'
 
-  ROLES = [ 'seller', 'buyer' ].freeze
+  ROLES = %w[seller buyer].freeze
 
   has_secure_password
 
