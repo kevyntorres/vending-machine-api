@@ -9,14 +9,10 @@ class Product < ApplicationRecord
   validate :valid_cost, :valid_amount
 
   def valid_cost
-    unless cost % 5 == 0
-      errors.add(:cost, "must be multiple of 5!")
-    end
+    errors.add(:cost, 'must be multiple of 5!') unless (cost % 5).zero?
   end
 
   def valid_amount
-    if amountAvailable < 0
-      errors.add(:amountAvailable, "cannot be negative!")
-    end
+    errors.add(:amountAvailable, 'cannot be negative!') if amountAvailable.negative?
   end
 end

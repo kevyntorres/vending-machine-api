@@ -33,7 +33,7 @@ RSpec.describe 'Products', type: :request do
       post '/buy', params: params
 
       expect(response).not_to be_successful
-      expect(response.body).to eq("{\"message\":\"you need more coins to buy it!\"}")
+      expect(response.body).to eq('{"message":"you need more coins to buy it!"}')
     end
 
     it 'buy a product successfully' do
@@ -62,7 +62,7 @@ RSpec.describe 'Products', type: :request do
       params = {
         "amountAvailable": 10,
         "cost": 30,
-        "productName": "new product"
+        "productName": 'new product'
       }
 
       post '/products', params: params

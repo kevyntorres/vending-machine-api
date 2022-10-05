@@ -18,7 +18,7 @@ RSpec.describe 'Users', type: :request do
 
   describe 'POST /deposit' do
     params = {
-      "coin": 50,
+      "coin": 50
     }
 
     it 'deposit successfully' do
@@ -30,7 +30,6 @@ RSpec.describe 'Users', type: :request do
   end
 
   describe 'POST /reset' do
-
     it 'reset deposit successfully' do
       post '/reset'
 
