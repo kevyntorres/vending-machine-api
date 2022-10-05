@@ -41,16 +41,16 @@ class ProductsController < ApplicationController
 
   def buy
     product = Product.find(buy_params[:productId])
-    cost = buy_params[:amount] * product[:cost]
+    cost = amount * product[:cost].to_i
     change = deposit_amount - cost
-    if (product.amountAvailable - buy_params[:amount]).negative?
+    if (product.amountAvailable - amount).negative?
       render json: { message: 'product amount available is not enough!' }, status: :bad_request
     elsif change.negative?
       render json: { message: 'you need more coins to buy it!' }, status: :bad_request
     else
       current_user.deposit = []
       current_user.save!
-      product.amountAvailable = product.amountAvailable - buy_params[:amount]
+      product.amountAvailable = product.amountAvailable - amount
       product.save!
       render json: { product: product.productName, totalSpent: cost, change: change_array(change) }, status: :ok
     end
@@ -92,6 +92,10 @@ class ProductsController < ApplicationController
 
   def buy_params
     params.permit(:productId, :amount)
+  end
+
+  def amount
+    buy_params[:amount].to_i
   end
 
   def validate_seller?
