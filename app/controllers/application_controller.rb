@@ -12,6 +12,10 @@ class ApplicationController < ActionController::API
     render json: { message: 'you must have buyer role!' }, status: :unauthorized unless current_user.role == 'buyer'
   end
 
+  def seller_role?
+    render json: { message: 'you must have seller role!' }, status: :unauthorized unless current_user.role == 'seller'
+  end
+
   private
 
   def authenticate_request

@@ -4,6 +4,7 @@ class ProductsController < ApplicationController
   skip_before_action :authenticate_request, only: %i[index show]
   before_action :validate_seller?, only: %i[update destroy]
   before_action :buyer_role?, only: [:buy]
+  before_action :seller_role?, only: [:create]
 
   def index
     products = Product.all
